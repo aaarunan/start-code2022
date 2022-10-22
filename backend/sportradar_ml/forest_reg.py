@@ -11,8 +11,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pydot
 
-os.chdir('..')
-
 
 def get_df_from_csv(file_name):
     return pd.read_csv("matches/" + file_name + ".csv")
