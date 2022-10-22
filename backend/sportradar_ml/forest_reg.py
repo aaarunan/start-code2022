@@ -14,6 +14,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pydot
 
+os.chdir('..')
+# matches = parse_folder('matches/300matches')
+# match = next(matches)
+# df = match.dataframe()
+# for match in tqdm.tqdm(matches, desc='Parsing matches...'):
+#     df = pd.concat([df, match.dataframe()])
+
+df = pd.read_csv("matches/1000matches.csv")
 """
 One-hot encoding:
 
@@ -22,18 +30,12 @@ A one represents a boolean value true for a given parameter.
 This can be done using pandas' dataframe.
 
 """
-os.chdir('..')
-matches = parse_folder('matches/300matches')
-match = next(matches)
-df = match.dataframe()
-for match in tqdm.tqdm(matches, desc='Parsing matches...'):
-    df = pd.concat([df, match.dataframe()])
 
 # Separate features (input values) and target (desired output value)
 
 labels = np.array(df['FINAL GOALS'])
 
-df = df.drop(df['FINAL GOALS'])
+df = df.drop(columns=['FINAL GOALS'])
 
 list_features = list(df.columns)
 
@@ -47,10 +49,10 @@ train_features, test_features, train_labels, test_labels = train_test_split(feat
 # Could switch verbose back to one, check when the algorithm is actually being used.
 rf = RandomForestRegressor(n_estimators=1000, random_state=42, verbose=2)
 
-#Saving the trained model
+# Saving the trained model
 joblib.dump(rf, "Trained_random_forest.joblib")
 
-#To load the model
+# To load the model
 # if os.path.exists("Trained_random_forest.joblib"):
 #     loaded_rf = joblib.load("Trained_random_forest.joblib")
 
@@ -58,6 +60,7 @@ joblib.dump(rf, "Trained_random_forest.joblib")
 rf.fit(features, labels)
 
 predictions = rf.predict(test_features)
+
 
 """
 After training the algorithm, it would be nice with some overview of the factors as well as what a random forest
@@ -116,7 +119,7 @@ importances = list(rf.feature_importances_)
 
 # Making a graph of all the important factors for creating a prediction.
 def graph_feature_importance():
-    plt.style.use('Solarized_Light2')
+    plt.style.use('Solarize_Light2')
     x_values = list(range(len(importances)))
     plt.bar(x_values, importances, orientation='vertical')
     plt.xticks(x_values, list_features, rotation='vertical')  # Tick labels for x axis
@@ -124,6 +127,8 @@ def graph_feature_importance():
     plt.ylabel('Weighting/Importance of factor')
     plt.xlabel('Features')
     plt.title('Importance of Variables')
+    plt.tight_layout()
+    plt.show()
 
 
 """
@@ -133,12 +138,11 @@ Now, there needs to be a way to feed in a single feature update into the algorit
 
 def get_new_prediction(new_event):
     # Input to handle: time in game, the actual event
-    return rf.predict(new_event)
+    return rf.predict([new_event])
 
 
 if __name__ == '__main__':
-    print()
-    print_tree()
+    # print_tree()
     graph_feature_importance()
     get_stat_table()
     print("Predictions")
