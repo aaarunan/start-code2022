@@ -1,9 +1,9 @@
 import os
+import shlex
 from typing import Iterator
 
 from matches.event import create_event, Event
 from matches.match import Match
-import shlex
 
 line_types = {"match": Match, "event": create_event}
 
