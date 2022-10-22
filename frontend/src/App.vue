@@ -60,7 +60,7 @@
 import Chart from '@/components/Chart'
 import Api from "../service/api";
 import InfoTable from "@/components/infoTable";
-import VLazyImage from 'v-lazy-image'
+import VLazyImage from 'v-lazy-image';
 
 export default {
   name: 'App',
@@ -77,6 +77,7 @@ export default {
         actualChartValues: [],
         outputMessages: [],
         winrate_ratio: 0.5,
+        winrate_actual: 0.5,
         events: [],
         eventMinute: '00',
         eventSeconds: '00',
@@ -98,7 +99,18 @@ export default {
       },
       chartData: {
         labels: [],
-        datasets: [{data: []}]
+        datasets: [
+          {
+            label: 'Predicted ratio',
+            borderColor: '#00c0ef',
+            data: []
+          },
+          {
+            label: 'Actual ratio',
+            borderColor: '#ef2a00',
+            data: []
+          },
+        ]
       },
     }
   },
@@ -112,15 +124,19 @@ export default {
         this.home_team = data.home_team;
         this.away_team = data.away_team;
         console.log(data.home_team.predicted_goals)
-        this.data.winrate_ratio= data.home_team.predicted_goals / (data.home_team.predicted_goals + data.away_team.predicted_goals)
-        console.log(this.data.winrate_ratio)
+        this.data.winrate_ratio = data.home_team.predicted_goals / (data.home_team.predicted_goals + data.away_team.predicted_goals)
+        this.data.winrate_actual = data.home_team.actual_goals / (data.home_team.actual_goals + data.away_team.actual_goals)
         if (isNaN(this.data.winrate_ratio)) {
           this.data.winrate_ratio = 0.5;
+        }
+        if (isNaN(this.data.winrate_actual)) {
+          this.data.winrate_actual = 0.5
         }
         this.data.events = data.events
         this.data.outputMessages.push(data)
         this.chartData.labels.push(data.minutes)
         this.data.eventMinute = data.minutes
+        this.chartData.datasets[1].data.push(this.data.winrate_actual)
         this.chartData.datasets[0].data.push(this.data.winrate_ratio)
       }).catch(() => {
         console.error("moren din er feil")

@@ -28,6 +28,7 @@ export default {
   data() {
     return {
       chartOptions: {
+        animations: false,
         responsive: true,
         maintainAspectRatio: false
       },
