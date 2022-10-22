@@ -46,6 +46,7 @@ body {
 .inner-bar {
     width: 100%;
     background-color: #354f52;
+    transition: height .6s  ease-in-out;
     border-radius: 10px;
 }
 
