@@ -11,6 +11,9 @@ class Event:
         self.minutes, self.seconds = self.mtime_to_minutes_and_seconds(mtime)
         self.side = side
 
+    def fractional_minutes(self):
+        return self.minutes + self.seconds / 60
+
     def __str__(self):
         return_str = "Event:"
         for attribute, value in vars(self).items():
