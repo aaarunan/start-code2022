@@ -185,13 +185,13 @@ def get_new_prediction(new_event_df, rf):
     of one team.
     """
     # Input to handle: time in game, the actual event
+    new_event_df = drop_label(new_event_df)
     return rf.predict(new_event_df)
 
 
 # def test_model(rf):
 #     df_test = get_df_from_csv("300matches")
-#     label_from_test = get_labels(df_test)
-#     feat_from_test = get_list_of_features(df_test)
+#     label_from_test = get_labels(df_test) #     feat_from_test = get_list_of_features(df_test)
 #     predictions = rf.predict(feat_from_test)
 #     print(predictions)
 #     print(label_from_test)
@@ -204,7 +204,7 @@ if __name__ == '__main__':
     rf = create_forest()
     train_rf(rf)
 
-    # save_trained_model(rf, "Trained_random_forest")
+    save_trained_model(rf, "Trained_random_forest")
 
     # rf = load_model_from_joblib("Trained_random_forest_3000")
     predictions = rf.predict(test_features)
