@@ -71,6 +71,7 @@ class GoalEvent(Event):
     def __init__(self, **kwargs):
         super().__init__(event_name=self.event_name, **kwargs)
 
+
 event_types = {
     30: GoalEvent,
     150: FreeKickEvent,

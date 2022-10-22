@@ -1,3 +1,6 @@
+import os
+from typing import Iterator
+
 from matches.event import create_event, Event
 from matches.match import Match
 import shlex
@@ -25,10 +28,12 @@ def parse_file(path: str) -> Match:
             event: Event | None = parse_line(line)
             if event is not None:
                 match.events.append(event)
+    match.set_total_goals()
     return match
 
-# def parse_folder(path: str) -> list[Match]:
 
+def parse_folder(path: str) -> Iterator[Match]:
+    return (parse_file(os.path.join(path, file)) for file in os.listdir(path))
 
 
 if __name__ == "__main__":

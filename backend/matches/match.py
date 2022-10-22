@@ -123,6 +123,5 @@ if __name__ == "__main__":
     from matches.xml_parser import parse_file
 
     match = parse_file("300matches/27647274.xml")
-    for event in match.events_generator():
-        print(f"{match.throw_ins}")
-
+    for events in match.event_per_minute():
+        print(f"{match.minutes}: [{', '.join(map(str, events))}]")
