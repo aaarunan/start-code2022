@@ -48,11 +48,11 @@ def create_and_save_csv(xml_folder_path: str, csv_path: str, loading_bar=True) -
     for match in matches:
         df = pandas.concat((df, match.dataframe()), ignore_index=True)
 
-    df.to_csv(csv_path)
+    df.to_csv(csv_path, index=False)
 
     return df
 
 
 if __name__ == "__main__":
-    create_and_save_csv("300matches", "1000matches.csv")
+    create_and_save_csv("300matches", "300matches.csv")
     create_and_save_csv("1000matches", "1000matches.csv")
