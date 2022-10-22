@@ -1,27 +1,23 @@
 import os
 
 import joblib
-import tqdm
-from tqdm import trange
-from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.tree import export_graphviz
 from sklearn.metrics import mean_squared_error
 from tabulate import tabulate
-from matches.xml_parser import parse_folder
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import pydot
 
 os.chdir('..')
-# matches = parse_folder('matches/300matches')
-# match = next(matches)
-# df = match.dataframe()
-# for match in tqdm.tqdm(matches, desc='Parsing matches...'):
-#     df = pd.concat([df, match.dataframe()])
 
-df = pd.read_csv("matches/1000matches.csv")
+
+def get_df_from_csv():
+    return pd.read_csv("matches/1000matches.csv")
+
+
 """
 One-hot encoding:
 
@@ -31,36 +27,68 @@ This can be done using pandas' dataframe.
 
 """
 
+df = get_df_from_csv()
+
+
 # Separate features (input values) and target (desired output value)
 
-labels = np.array(df['FINAL GOALS'])
+def get_labels(df):
+    return np.array(df['FINAL GOALS'])
 
-df = df.drop(columns=['FINAL GOALS'])
 
-list_features = list(df.columns)
+def drop_label(df):
+    return df.drop(columns=['FINAL GOALS'])
 
-features = np.array(df)
+
+def get_list_of_features(df):
+    return list(drop_label(df).columns)
+
+
+def get_arr_features(df):
+    return np.array(drop_label(df))
+
 
 # Split data into training (approx. 70-80%) and testing (20-30%) sets. This is called hold-out validation.
 # The train_test_split method automatically randomly splits the data set based on the random_state variable.
-train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.95,
-                                                                            random_state=42)
+
+def split_data(features, labels):
+    return train_test_split(features, labels, test_size=0.95, random_state=42)
+
+
+train_features, test_features, train_labels, test_labels = split_data(get_arr_features(df), get_labels(df))
+
 
 # Could switch verbose back to one, check when the algorithm is actually being used.
-rf = RandomForestRegressor(n_estimators=1000, random_state=42, verbose=2)
+def create_forest():
+    return RandomForestRegressor(n_estimators=1000, random_state=42, verbose=2)
 
-# Saving the trained model
-joblib.dump(rf, "Trained_random_forest.joblib")
 
-# To load the model
-# if os.path.exists("Trained_random_forest.joblib"):
-#     loaded_rf = joblib.load("Trained_random_forest.joblib")
+rf = create_forest()
+
+
+def train_rf(rf):
+    rf.fit(get_arr_features(df), get_labels(df))
+
+
+train_rf(rf)
+
 
 # Train the model using the training set's features and labels
-rf.fit(features, labels)
+
+def save_trained_model(rf, name_of_file):
+    joblib.dump(rf, str(name_of_file) + ".joblib")
+
+
+save_trained_model(rf, "Trained_random_forest")
+
+
+def load_model(name_of_file):
+    path = name_of_file + ".joblib"
+    if os.path.exists(path):
+        return joblib.load(path)
+
 
 predictions = rf.predict(test_features)
-
 
 """
 After training the algorithm, it would be nice with some overview of the factors as well as what a random forest
@@ -68,11 +96,17 @@ really is.
 """
 
 
+def get_important_feat(rf):
+    return list(rf.feature_importances_)
+
+importances = get_important_feat(rf)
+
+
 def print_tree():
     # Pull out one tree from the forest
     tree = rf.estimators_[5]
     # Export the image to a dot file
-    export_graphviz(tree, out_file='tree.dot', feature_names=list_features, rounded=True, precision=1)
+    export_graphviz(tree, out_file='tree.dot', feature_names=get_list_of_features(df), rounded=True, precision=1)
     # Use dot file to create a graph
     (graph,) = pydot.graph_from_dot_file('tree.dot')
     # Write graph to a png file
@@ -111,18 +145,17 @@ def get_stat_table():
     table = [["MSE", "MAE", "RMSE", "R-squared"], [calc_MSE(), calc_MAE(), calc_RMSE(), calc_R_Squared()]]
     print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
 
-    # Get the different weightings of features
+
+"""
+This method creates a table containing information about the accuracy of the trained model.
+"""
 
 
-importances = list(rf.feature_importances_)
-
-
-# Making a graph of all the important factors for creating a prediction.
 def graph_feature_importance():
     plt.style.use('Solarize_Light2')
     x_values = list(range(len(importances)))
     plt.bar(x_values, importances, orientation='vertical')
-    plt.xticks(x_values, list_features, rotation='vertical')  # Tick labels for x axis
+    plt.xticks(x_values, get_list_of_features(df), rotation='vertical')  # Tick labels for x axis
     # Axis labels and title
     plt.ylabel('Weighting/Importance of factor')
     plt.xlabel('Features')
@@ -132,14 +165,19 @@ def graph_feature_importance():
 
 
 """
-Now, there needs to be a way to feed in a single feature update into the algorithm and get a new, adjusted value result
+This method creates a bar graph displaying the relative importance/weightings of the different features.
 """
 
 
-def get_new_prediction(new_event):
+def get_new_prediction(new_event_df):
     # Input to handle: time in game, the actual event
-    return rf.predict([new_event])
+    return rf.predict(new_event_df)
 
+
+"""
+By taking a new event dataframe as a parameter, this method returns the algorithm's best prediction for the final score 
+of one team.
+"""
 
 if __name__ == '__main__':
     # print_tree()
