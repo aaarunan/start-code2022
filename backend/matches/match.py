@@ -22,12 +22,15 @@ class Match:
     total_goals: list[int] = [0, 0]
 
     def __init__(self, **kwargs):
-        self.home_team = Team(
-            int(kwargs["t1id"]), kwargs["t1namenatural"], kwargs["t1abbr"]
-        )
-        self.away_team = Team(
-            int(kwargs["t2id"]), kwargs["t2namenatural"], kwargs["t2abbr"]
-        )
+        try:
+            self.home_team = Team(
+                int(kwargs["t1id"]), kwargs["t1name"], kwargs.get("t1abbr", "")
+            )
+            self.away_team = Team(
+                int(kwargs["t2id"]), kwargs["t2name"], kwargs.get("t2abbr", "")
+            )
+        except KeyError as e:
+            print(e, kwargs)
         self.events = list()
         self.reset_stats()
 

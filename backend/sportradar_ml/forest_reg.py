@@ -1,9 +1,12 @@
+import os
+
+import tqdm
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.tree import export_graphviz
 from sklearn.metrics import mean_squared_error
 from tabulate import tabulate
-from matches.xml_parser import parse_file, parse_folder
+from matches.xml_parser import parse_folder
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,11 +20,12 @@ A one represents a boolean value true for a given parameter.
 This can be done using pandas' dataframe.
 
 """
+os.chdir('..')
 matches = parse_folder('matches/300matches')
 match = next(matches)
 df = match.dataframe()
-for match in matches:
-    df = pd.concat(df, match.dataframe())
+for match in tqdm.tqdm(matches, desc='Parsing matches...'):
+    df = pd.concat([df, match.dataframe()])
 
 # Separate features (input values) and target (desired output value)
 
@@ -121,6 +125,12 @@ def get_new_prediction(new_event):
 
 
 if __name__ == '__main__':
+    print()
     print_tree()
     graph_feature_importance()
     get_stat_table()
+    print("Predictions")
+    print(predictions)
+    print("Actual Values")
+    print(test_labels)
+

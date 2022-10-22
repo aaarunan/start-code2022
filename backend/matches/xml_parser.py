@@ -33,6 +33,7 @@ def parse_file(path: str) -> Match:
 
 
 def parse_folder(path: str) -> Iterator[Match]:
+    print(os.getcwd())
     return (parse_file(os.path.join(path, file)) for file in os.listdir(path))
 
 
