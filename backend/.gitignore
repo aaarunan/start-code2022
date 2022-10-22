@@ -1,9 +1,11 @@
-# All match dto
+# All match data
 **/*.xml
 **/*.csv
+**/*.joblib
 
 .idea
 **/__pycache__
 
 **/.DS_Store
+
 
