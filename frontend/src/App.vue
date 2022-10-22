@@ -18,7 +18,7 @@
             <div class="square tile">
               <h1>Event time</h1>
               <div class="centered">
-                <h1 class="centered-text large">At {{this.data.eventMinute}} m</h1>
+                <h1 class="centered-text large">{{this.data.eventMinute}}:00</h1>
               </div>
             </div>
           </div>
@@ -29,7 +29,7 @@
             <div class="square tile">
               <h1>Events</h1>
               <div class="centered">
-                <h2 class="centered-text">{{ this.data.eventType }}</h2>
+                <v-lazy-image v-for="event in this.data.events" :src=this.getImageURL(event) :alt="event.eventType" :key="event" style="width: 40px" />
               </div>
             </div>
           </div>
@@ -60,12 +60,14 @@
 import Chart from '@/components/Chart'
 import Api from "../service/api";
 import InfoTable from "@/components/infoTable";
+import VLazyImage from 'v-lazy-image'
 
 export default {
   name: 'App',
   components: {
     InfoTable,
-    Chart
+    Chart,
+    VLazyImage
   },
   data() {
     return {
@@ -75,7 +77,7 @@ export default {
         actualChartValues: [],
         outputMessages: [],
         attackerWinRate: 0.5,
-        eventType: "",
+        events: [],
         eventMinute: '00',
         eventSeconds: '00',
 
@@ -101,19 +103,28 @@ export default {
     }
   },
   mounted() {
-    setInterval(() => this.fetchNewValues(), 1000)
+    setInterval(() => this.fetchNewValues(), 500)
   },
   methods: {
-    async fetchNewValues() {
+    fetchNewValues() {
       // eslint-disable-next-line
       Api().get("/next-minute").then(({data}) => {
+        var prevAverageHomeTeam = this.home_team.average_goals
+        var prevAverageAwayTeam = this.away_team.average_goals
+        console.log(data)
         this.home_team = data.home_team;
         this.away_team = data.away_team;
+        this.home_team.average_goals = (this.home_team.expected_goals + prevAverageHomeTeam)/2
+        this.away_team.average_goals = (this.away_team.expected_goals + prevAverageAwayTeam)/2
+        this.data.events = data.events
         this.data.outputMessages.push(data)
         this.chartData.labels.push(data.minutes)
-        //this.chartData.datasets.data.push(data.expected_goals)
         this.data.eventMinute = data.minutes
+        this.chartData.datasets[0].data.push(data.expected_goals)
       }).catch(() => Api().get('/reset'));
+    },
+    getImageURL(event) {
+      return require(`@/static/icons/${event.event}.png`)
     }
   }
 }

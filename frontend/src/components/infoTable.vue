@@ -5,8 +5,8 @@
       <th>Average</th>
     </tr>
     <tr>
-      <td>{{this.team.expectedGoals}}</td>
-      <td>{{this.team.averageGoals}}</td>
+      <td>{{this.team.expected_goals}}</td>
+      <td>{{this.team.average_goals}}</td>
     </tr>
   </table>
 </template>
@@ -14,11 +14,7 @@
 <script>
 export default {
   name: "infoTable",
-  data() {
-    return {
-      team: {expected_goals: null, average_goals: null}
-    }
-  }
+  props: ['team']
 }
 </script>
 
