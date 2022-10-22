@@ -1,4 +1,4 @@
-# All match data
+# All match dto
 **/*.xml
 
 .idea
