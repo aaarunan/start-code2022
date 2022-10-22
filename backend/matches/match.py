@@ -70,11 +70,13 @@ class Match:
                 while (
                     last_event := next(events, None)
                 ) is not None and last_event.minutes <= self.minutes:
-                    if isinstance(last_event, PossessionEvent):
-                        continue
                     out.append(last_event)
-                yield out
+                yield self.exclude_events(out, (PossessionEvent,))
             self.minutes += 1
+
+    @staticmethod
+    def exclude_events(events: list[Event], exclude: tuple[Type[Event]]) -> list[Event]:
+        return list(filter(lambda event: not isinstance(event, exclude), events))
 
     def last_event_data(self, side: int) -> dict[str, list[float]]:
         data: dict[str, list[float]] = {
@@ -190,4 +192,6 @@ if __name__ == "__main__":
 
     match = parse_file("300matches/27647274.xml")
     pandas.set_option("display.max_columns", 100)
-    print(match.dataframe().head(10))
+
+    for events in match.event_per_minute():
+        print(f"{match.minutes}, [{', '.join(map(str, events))}]")
