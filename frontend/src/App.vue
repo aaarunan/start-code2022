@@ -51,7 +51,7 @@
       </div>
     </div>
     <div class="probability-bar tile">
-      <div class="inner-bar" :style="{height: this.data.winrate_ratio * 100 + '%'}"></div>
+      <div class="inner-bar" :style="{height: (1 - this.data.winrate_ratio) * 100 + '%'}"></div>
     </div>
 
   </div>
@@ -112,7 +112,7 @@ export default {
         this.home_team = data.home_team;
         this.away_team = data.away_team;
         console.log(data.home_team.predicted_goals)
-        this.data.winrate_ratio= data.away_team.predicted_goals / (data.home_team.predicted_goals + data.away_team.predicted_goals)
+        this.data.winrate_ratio= data.home_team.predicted_goals / (data.home_team.predicted_goals + data.away_team.predicted_goals)
         console.log(this.data.winrate_ratio)
         if (isNaN(this.data.winrate_ratio)) {
           this.data.winrate_ratio = 0.5;
