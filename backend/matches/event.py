@@ -77,9 +77,17 @@ class GoalEvent(Event):
     def __init__(self, **kwargs):
         super().__init__(event_name=self.event_name, **kwargs)
 
+class RedCardEvent(Event):
+    event_name: str = "RED CARD"
+
+    def __init__(self, **kwargs):
+        super().__init__(event_name=self.event_name, **kwargs)
+
 
 event_types: dict[int, Type[Event]] = {
     30: GoalEvent,
+    45: RedCardEvent,
+    50: RedCardEvent,
     150: FreeKickEvent,
     152: FreeThrowEvent,
     155: ShotOnTargetEvent,

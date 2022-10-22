@@ -13,6 +13,7 @@ class Match:
 
     minutes: int
     goals: list[int]
+    red_cards: list[int]
     free_kicks: list[int]
     throw_ins: list[int]
     shots_on: list[int]
@@ -43,6 +44,7 @@ class Match:
     def reset_stats(self):
         self.minutes = 0
         self.goals = [0, 0]
+        self.red_cards = [0, 0]
         self.free_kicks = [0, 0]
         self.throw_ins = [0, 0]
         self.shots_on = [0, 0]
@@ -74,6 +76,11 @@ class Match:
 
                     def add_function():
                         self.goals[side] += 1
+
+                case 45 | 50:
+
+                    def add_function():
+                        self.red_cards[side] += 1
 
                 case 150:
 
@@ -122,6 +129,7 @@ class Match:
             if isinstance(event, GoalEvent):
                 continue
             side = 0 if event.side == "home" else 1
+            data[RedCardEvent.event_name].append(self.red_cards[side])
             data[FreeKickEvent.event_name].append(self.free_kicks[side])
             data[FreeThrowEvent.event_name].append(self.throw_ins[side])
             data[ShotOnTargetEvent.event_name].append(self.shots_on[side])
@@ -147,5 +155,5 @@ if __name__ == "__main__":
     from matches.xml_parser import parse_file
 
     match = parse_file("300matches/27647274.xml")
-    pandas.set_option('display.max_columns', 100)
+    pandas.set_option("display.max_columns", 100)
     print(match.dataframe().head(10))
