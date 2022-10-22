@@ -2,7 +2,7 @@
   <LineChartGenerator
       :chart-options="chartOptions"
       :chart-data="chartData"
-      :chart-id="chartId"
+      chart-id="line-chart"
       :dataset-id-key="datasetIdKey"
       id="graph"
   />
@@ -24,22 +24,9 @@ ChartJS.register(
 export default {
   name: 'BarChart',
   components: {LineChartGenerator},
-  props: {
-    chartId: {
-      type: String,
-      default: 'bar-chart'
-    },
-    datasetIdKey: {
-      type: String,
-      default: 'label'
-    },
-  },
+  props: ['chartData', 'datasetIdKey'],
   data() {
     return {
-      chartData: {
-        labels: ['January', 'February', 'March',"",""],
-        datasets: [{data: [40, 20, 12,1,1,1,1,1,]}]
-      },
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false

@@ -1,4 +1,3 @@
-<!--suppress ALL -->
 <template>
   <div class="main-container">
     <div class="info-container">
@@ -6,7 +5,7 @@
         <div class="output tile ">
           <h1>Output</h1>
           <div class="scrollable">
-            <p v-for="message in this.data.outputMessages"> {{ message }} </p>
+            <p v-for="message in this.data.outputMessages" :key="message"> {{ message }} </p>
           </div>
         </div>
         <div class="tile-view">
@@ -39,7 +38,7 @@
       <div class="row">
         <div class="graph tile">
           <h1>Graph</h1>
-          <Chart/>
+          <Chart :chart-data="this.chartData" :dataset-id-key="this.datasetIdKey" />
         </div>
         <div class="predicted-score tile">
           <h1>Prediction</h1>
@@ -90,7 +89,15 @@ export default {
         expectedGoals: 1,
         actualGoals: 1,
         averageGoals: 2,
-      }
+      },
+      datasetIdKey: {
+        type: String,
+        default: 'label'
+      },
+      chartData: {
+        labels: ['10:00', '40:00'],
+        datasets: [{data: [40, 30]}]
+      },
     }
   },
   mounted() {
@@ -98,6 +105,7 @@ export default {
   },
   methods: {
     async fetchNewValues() {
+      // eslint-disable-next-line
       let newValues = Api().get("/api");
     }
   }
