@@ -1,5 +1,6 @@
 # All match data
 **/*.xml
+**/*.csv
 
 .idea
 **/__pycache__
