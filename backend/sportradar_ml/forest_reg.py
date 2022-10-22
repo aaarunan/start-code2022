@@ -13,7 +13,7 @@ import pydot
 
 
 def get_df_from_csv(file_name):
-    return pd.read_csv("matches/" + file_name + ".csv")
+    return pd.read_csv("../matches/" + file_name + ".csv")
 
 
 """
@@ -202,7 +202,7 @@ if __name__ == '__main__':
     rf = create_forest()
     train_rf(rf)
 
-    save_trained_model(rf, "Trained_random_forest")
+    save_trained_model(rf, "rf")
 
     # rf = load_model_from_joblib("Trained_random_forest_3000")
     predictions = rf.predict(test_features)
