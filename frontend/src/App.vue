@@ -53,7 +53,7 @@
     <div class="probability-bar tile">
       <div class="inner-bar" :style="{height: (1 - this.data.winrate_ratio) * 100 + '%'}"></div>
     </div>
-
+    <div class="actual-bar" :style="{height: (1 - this.data.winrate_actual) * 100 +'%'}"/>
   </div>
 </template>
 <script>
@@ -145,7 +145,7 @@ export default {
     },
     getImageURL(event) {
       return require(`@/static/icons/${event.event}.png`)
-    }
+    },
   }
 }
 </script>
