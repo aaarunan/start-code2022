@@ -1,7 +1,9 @@
 import os
 
+import joblib
 import tqdm
-from sklearn.ensemble import RandomForestRegressor
+from tqdm import trange
+from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.tree import export_graphviz
 from sklearn.metrics import mean_squared_error
@@ -39,10 +41,18 @@ features = np.array(df)
 
 # Split data into training (approx. 70-80%) and testing (20-30%) sets. This is called hold-out validation.
 # The train_test_split method automatically randomly splits the data set based on the random_state variable.
-train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.20,
+train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.95,
                                                                             random_state=42)
 
-rf = RandomForestRegressor(n_estimators=1000, random_state=42)
+# Could switch verbose back to one, check when the algorithm is actually being used.
+rf = RandomForestRegressor(n_estimators=1000, random_state=42, verbose=2)
+
+#Saving the trained model
+joblib.dump(rf, "Trained_random_forest.joblib")
+
+#To load the model
+# if os.path.exists("Trained_random_forest.joblib"):
+#     loaded_rf = joblib.load("Trained_random_forest.joblib")
 
 # Train the model using the training set's features and labels
 rf.fit(features, labels)
@@ -79,9 +89,9 @@ def calc_MAE():
 def calc_RMSE():
     return np.sqrt(calc_MSE())
 
-#
-# def calc_R_Squared():
-#     errors = (predictions - tes)
+
+def calc_R_Squared():
+    return rf.score(test_features, test_labels)
 
 
 def compare_predict_to_real():
@@ -92,8 +102,10 @@ def compare_predict_to_real():
     Lower values of MAE, MSE, and RMSE indicates a higher accuracy
     A higher coefficient of determination R square is also desirable.
 """
+
+
 def get_stat_table():
-    table = [["MSE", "MAE", "RMSE"], [calc_MSE(), calc_MAE(), calc_RMSE()]]
+    table = [["MSE", "MAE", "RMSE", "R-squared"], [calc_MSE(), calc_MAE(), calc_RMSE(), calc_R_Squared()]]
     print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
 
     # Get the different weightings of features
@@ -133,4 +145,3 @@ if __name__ == '__main__':
     print(predictions)
     print("Actual Values")
     print(test_labels)
-
