@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Iterator
 
 import pandas
@@ -11,8 +12,12 @@ class Match:
     away_team: Team
     events: list[Event]
 
+    last_possession_time: float
+    i: int
+
     minutes: int
     goals: list[int]
+    possession: tuple[float, float]
     red_cards: list[int]
     free_kicks: list[int]
     throw_ins: list[int]
@@ -32,6 +37,7 @@ class Match:
             )
         except KeyError as e:
             print(e, kwargs)
+        self.i = 0
         self.events = list()
         self.reset_stats()
 
@@ -44,6 +50,8 @@ class Match:
     def reset_stats(self):
         self.minutes = 0
         self.goals = [0, 0]
+        self.last_possession_time = 0
+        self.possession = (0.5, 0.5)
         self.red_cards = [0, 0]
         self.free_kicks = [0, 0]
         self.throw_ins = [0, 0]
@@ -66,9 +74,30 @@ class Match:
                 yield out
             self.minutes += 1
 
+    def last_event_data(self, side: int) -> dict[str, list[float]]:
+        data: dict[str, list[float]] = {
+            event.event_name: list() for event in event_types.values()
+        }
+        del data[GoalEvent.event_name]
+        data["GAME TIME"] = list()
+        data["FINAL GOALS"] = list()
+
+        event = self.events[self.i]
+        data[RedCardEvent.event_name].append(self.red_cards[side])
+        data[PossessionEvent.event_name].append(self.possession[side])
+        data[FreeKickEvent.event_name].append(self.free_kicks[side])
+        data[FreeThrowEvent.event_name].append(self.throw_ins[side])
+        data[ShotOnTargetEvent.event_name].append(self.shots_on[side])
+        data[ShotOffTargetEvent.event_name].append(self.shots_off[side])
+        data[PenaltyAwardedEvent.event_name].append(self.penalties[side])
+        data["GAME TIME"].append(event.fractional_minutes())
+        data["FINAL GOALS"].append(self.total_goals[side])
+
+        return data
+
     def events_generator(self, add_before=True) -> Iterator[Event]:
         self.reset_stats()
-        for event in self.events:
+        for self.i, event in enumerate(self.events):
             side = 0 if event.side == "home" else 1
 
             match event.type:
@@ -81,6 +110,21 @@ class Match:
 
                     def add_function():
                         self.red_cards[side] += 1
+
+                case 110:
+
+                    def add_function():
+                        cur_time = event.fractional_minutes()
+                        delta = cur_time - self.last_possession_time
+                        old_pos = self.possession[0]
+                        if cur_time == 0:
+                            new_pos = 0.5
+                        else:
+                            new_pos = (
+                                old_pos * self.last_possession_time + side * delta
+                            ) / cur_time
+                        self.last_possession_time = cur_time
+                        self.possession = (new_pos, 1 - new_pos)
 
                 case 150:
 
@@ -119,24 +163,12 @@ class Match:
                 add_function()
 
     def dataframe(self) -> pandas.DataFrame:
-        data: dict[str, list[float]] = {
-            event.event_name: list() for event in event_types.values()
-        }
-        del data[GoalEvent.event_name]
-        data["GAME TIME"] = list()
-        data["FINAL GOALS"] = list()
+        data: defaultdict[str, list[float]] = defaultdict(list)
         for event in self.events_generator():
-            if isinstance(event, GoalEvent):
+            if isinstance(event, GoalEvent) or isinstance(event, PossessionEvent):
                 continue
-            side = 0 if event.side == "home" else 1
-            data[RedCardEvent.event_name].append(self.red_cards[side])
-            data[FreeKickEvent.event_name].append(self.free_kicks[side])
-            data[FreeThrowEvent.event_name].append(self.throw_ins[side])
-            data[ShotOnTargetEvent.event_name].append(self.shots_on[side])
-            data[ShotOffTargetEvent.event_name].append(self.shots_off[side])
-            data[PenaltyAwardedEvent.event_name].append(self.penalties[side])
-            data["GAME TIME"].append(event.fractional_minutes())
-            data["FINAL GOALS"].append(self.total_goals[side])
+            for key, value in self.last_event_data():
+                data[key].append(value)
         return pandas.DataFrame(data=data)
 
     def __str__(self):
