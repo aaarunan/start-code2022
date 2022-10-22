@@ -15,7 +15,7 @@ class match_dto(BaseModel):
     @classmethod
     def from_match(cls, match: Match, events: list[Event], predicted_score) -> "match_dto":
         home_team = team_dto(predicted_goals=predicted_score[0], actual_goals=match.total_goals[0], current_goals=match.goals[0])
-        away_team = team_dto(predicted_goals=predicted_score[0], actual_goals=match.total_goals[1], current_goals=match.goals[1])
+        away_team = team_dto(predicted_goals=predicted_score[1], actual_goals=match.total_goals[1], current_goals=match.goals[1])
         event_dtos = []
         for event in events:
             event_dtos.append(event_dto(event=event.event_name, event_id=event.type))
