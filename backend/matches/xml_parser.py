@@ -1,9 +1,12 @@
 import os
+import shlex
 from typing import Iterator
+
+import pandas
+import tqdm
 
 from matches.event import create_event, Event
 from matches.match import Match
-import shlex
 
 line_types = {"match": Match, "event": create_event}
 
@@ -33,9 +36,23 @@ def parse_file(path: str) -> Match:
 
 
 def parse_folder(path: str) -> Iterator[Match]:
+    print(os.getcwd())
     return (parse_file(os.path.join(path, file)) for file in os.listdir(path))
 
 
+def create_and_save_csv(xml_folder_path: str, csv_path: str, loading_bar=True) -> pandas.DataFrame:
+    matches = parse_folder(xml_folder_path)
+    df = next(matches).dataframe()
+    if loading_bar:
+        matches = tqdm.tqdm(matches)
+    for match in matches:
+        df = pandas.concat((df, match.dataframe()), ignore_index=True)
+
+    df.to_csv(csv_path)
+
+    return df
+
+
 if __name__ == "__main__":
-    match = parse_file("300matches/27647274.xml")
-    print(match)
+    create_and_save_csv("300matches", "1000matches.csv")
+    create_and_save_csv("1000matches", "1000matches.csv")

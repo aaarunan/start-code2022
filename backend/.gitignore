@@ -1,5 +1,6 @@
 # All match dto
 **/*.xml
+**/*.csv
 
 .idea
 **/__pycache__

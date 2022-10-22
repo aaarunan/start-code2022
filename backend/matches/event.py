@@ -1,3 +1,6 @@
+from typing import Type
+
+
 class Event:
     type: id
     event_name: str
@@ -10,6 +13,9 @@ class Event:
         self.event_name = event_name
         self.minutes, self.seconds = self.mtime_to_minutes_and_seconds(mtime)
         self.side = side
+
+    def fractional_minutes(self):
+        return self.minutes + self.seconds / 60
 
     def __str__(self):
         return_str = "Event:"
@@ -38,7 +44,7 @@ class FreeKickEvent(Event):
 
 
 class FreeThrowEvent(Event):
-    event_name: str = "FREE-THROW EVENT"
+    event_name: str = "FREE-THROW"
 
     def __init__(self, **kwargs):
         super().__init__(event_name=self.event_name, **kwargs)
@@ -72,7 +78,7 @@ class GoalEvent(Event):
         super().__init__(event_name=self.event_name, **kwargs)
 
 
-event_types = {
+event_types: dict[int, Type[Event]] = {
     30: GoalEvent,
     150: FreeKickEvent,
     152: FreeThrowEvent,

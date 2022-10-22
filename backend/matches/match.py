@@ -1,6 +1,8 @@
 from typing import Iterator
 
-from matches.event import Event
+import pandas
+
+from matches.event import *
 from matches.team import Team
 
 
@@ -20,12 +22,15 @@ class Match:
     total_goals: list[int] = [0, 0]
 
     def __init__(self, **kwargs):
-        self.home_team = Team(
-            int(kwargs["t1id"]), kwargs["t1namenatural"], kwargs["t1abbr"]
-        )
-        self.away_team = Team(
-            int(kwargs["t2id"]), kwargs["t2namenatural"], kwargs["t2abbr"]
-        )
+        try:
+            self.home_team = Team(
+                int(kwargs["t1id"]), kwargs["t1name"], kwargs.get("t1abbr", "")
+            )
+            self.away_team = Team(
+                int(kwargs["t2id"]), kwargs["t2name"], kwargs.get("t2abbr", "")
+            )
+        except KeyError as e:
+            print(e, kwargs)
         self.events = list()
         self.reset_stats()
 
@@ -45,7 +50,6 @@ class Match:
         self.penalties = [0, 0]
 
     def event_per_minute(self):
-        i = 0
         events = self.events_generator(False)
         last_event = next(events, None)
         while last_event is not None:
@@ -107,6 +111,26 @@ class Match:
             if not add_before:
                 add_function()
 
+    def dataframe(self) -> pandas.DataFrame:
+        data: dict[str, list[float]] = {
+            event.event_name: list() for event in event_types.values()
+        }
+        del data[GoalEvent.event_name]
+        data["GAME TIME"] = list()
+        data["FINAL GOALS"] = list()
+        for event in self.events_generator():
+            if isinstance(event, GoalEvent):
+                continue
+            side = 0 if event.side == "home" else 1
+            data[FreeKickEvent.event_name].append(self.free_kicks[side])
+            data[FreeThrowEvent.event_name].append(self.throw_ins[side])
+            data[ShotOnTargetEvent.event_name].append(self.shots_on[side])
+            data[ShotOffTargetEvent.event_name].append(self.shots_off[side])
+            data[PenaltyAwardedEvent.event_name].append(self.penalties[side])
+            data["GAME TIME"].append(event.fractional_minutes())
+            data["FINAL GOALS"].append(self.total_goals[side])
+        return pandas.DataFrame(data=data)
+
     def __str__(self):
         return_str = "Match:"
         for attribute, value in vars(self).items():
@@ -123,5 +147,5 @@ if __name__ == "__main__":
     from matches.xml_parser import parse_file
 
     match = parse_file("300matches/27647274.xml")
-    for events in match.event_per_minute():
-        print(f"{match.minutes}: [{', '.join(map(str, events))}]")
+    pandas.set_option('display.max_columns', 100)
+    print(match.dataframe().head(10))
