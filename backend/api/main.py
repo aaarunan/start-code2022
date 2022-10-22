@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from matches.event import Event
 from matches.xml_parser import parse_file
@@ -9,6 +10,18 @@ match = parse_file('matches/300matches/27647274.xml')
 
 match_gen = match.event_per_minute()
 
+origins = [
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
 
 @app.get("/next-minute")
 async def get_next_match():

@@ -14,7 +14,11 @@
 <script>
 export default {
   name: "infoTable",
-  props: [ 'team' ],
+  data() {
+    return {
+      team: {expected_goals: null, average_goals: null}
+    }
+  }
 }
 </script>
 

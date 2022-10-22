@@ -24,13 +24,15 @@ ChartJS.register(
 export default {
   name: 'BarChart',
   components: {LineChartGenerator},
-  props: ['chartData', 'datasetIdKey'],
+  props: ['datasetIdKey'],
   data() {
     return {
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false
-      }
+      },
+      chartData: this.chartData,
+
     }
   }
 }

@@ -12,13 +12,13 @@
           <div class="row">
             <div class="square tile">
               <h1>Goals</h1>
-              <h2 class="centered-text attacker">{{ this.attacker.expectedGoals }}</h2>
-              <h2 class="centered-text defender">{{ this.defender.expectedGoals }}</h2>
+              <h2 class="centered-text attacker">{{ this.home_team.expected_goals }}</h2>
+              <h2 class="centered-text defender">{{ this.away_team.expected_goals }}</h2>
             </div>
             <div class="square tile">
               <h1>Event time</h1>
               <div class="centered">
-                <h1 class="centered-text large">{{this.data.eventMinute}}:{{this.data.eventSeconds}}</h1>
+                <h1 class="centered-text large">At {{this.data.eventMinute}} m</h1>
               </div>
             </div>
           </div>
@@ -27,7 +27,7 @@
               <h1></h1>
             </div>
             <div class="square tile">
-              <h1>Event type</h1>
+              <h1>Events</h1>
               <div class="centered">
                 <h2 class="centered-text">{{ this.data.eventType }}</h2>
               </div>
@@ -43,10 +43,10 @@
         <div class="predicted-score tile">
           <h1>Prediction</h1>
           <h3>Attacker:</h3>
-          <info-table :team="this.attacker"></info-table>
+          <info-table :team="this.home_team"></info-table>
           <hr>
           <h3>Defender:</h3>
-          <info-table :team="this.defender"></info-table>
+          <info-table :team="this.away_team"></info-table>
         </div>
       </div>
     </div>
@@ -70,43 +70,50 @@ export default {
   data() {
     return {
       data: {
-        defenderGoals: 2,
+        defenderGoals: null,
         predictedChartValues: [],
         actualChartValues: [],
         outputMessages: [],
         attackerWinRate: 0.5,
-        eventType: "Kick",
-        eventMinute: 20,
-        eventSeconds: 20,
+        eventType: "",
+        eventMinute: '00',
+        eventSeconds: '00',
 
       },
-      attacker: {
-        expectedGoals: 1,
-        actualGoals: 1,
-        averageGoals: 2,
+      home_team: {
+        expected_goals: null,
+        actual_goals: null,
+        average_goals: null,
       },
-      defender: {
-        expectedGoals: 1,
-        actualGoals: 1,
-        averageGoals: 2,
+      away_team: {
+        expected_goals: null,
+        actual_goals: null,
+        average_goals: null,
       },
       datasetIdKey: {
         type: String,
         default: 'label'
       },
       chartData: {
-        labels: ['10:00', '40:00'],
-        datasets: [{data: [40, 30]}]
+        labels: [],
+        datasets: [{data: []}]
       },
     }
   },
   mounted() {
-
+    setInterval(() => this.fetchNewValues(), 1000)
   },
   methods: {
     async fetchNewValues() {
       // eslint-disable-next-line
-      let newValues = Api().get("/api");
+      Api().get("/next-minute").then(({data}) => {
+        this.home_team = data.home_team;
+        this.away_team = data.away_team;
+        this.data.outputMessages.push(data)
+        this.chartData.labels.push(data.minutes)
+        //this.chartData.datasets.data.push(data.expected_goals)
+        this.data.eventMinute = data.minutes
+      }).catch(() => Api().get('/reset'));
     }
   }
 }
