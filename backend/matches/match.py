@@ -70,6 +70,8 @@ class Match:
                 while (
                     last_event := next(events, None)
                 ) is not None and last_event.minutes <= self.minutes:
+                    if isinstance(last_event, PossessionEvent):
+                        continue
                     out.append(last_event)
                 yield out
             self.minutes += 1
