@@ -2,11 +2,11 @@
   <table>
     <tr>
       <th>Expected goals</th>
-      <th>Average</th>
+      <th>Actual goals</th>
     </tr>
     <tr>
-      <td>{{this.team.expected_goals}}</td>
-      <td>{{this.team.average_goals}}</td>
+      <td>{{this.team.predicted_goals}}</td>
+      <td>{{this.team.actual_goals}}</td>
     </tr>
   </table>
 </template>
