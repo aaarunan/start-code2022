@@ -121,7 +121,6 @@ export default {
     }
   },
   mounted() {
-    Api().get("/reset")
     setInterval(() => this.fetchNewValues(), 500)
   },
   methods: {
@@ -205,7 +204,7 @@ export default {
       return data.home_team.current_goals + " : " + data.away_team.current_goals;
     },
     reload() {
-      window.location.reload();
+      Api().get("/reset").then(() => window.location.reload())
     }
   }
 }
