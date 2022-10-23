@@ -12,8 +12,13 @@
           <div class="row">
             <div class="square tile">
               <h1>Goals</h1>
-                <h2 class="centered-text attacker">{{ this.home_team.current_goals }}</h2>
-              <h2 class="centered-text defender">{{ this.away_team.current_goals }}</h2>
+              <div class="centered">
+                <h2 class="centered-text" style="font-size: 32px;" >
+                  <span class="attacker">{{this.home_team.abbr}} {{ this.home_team.current_goals }}</span>
+                  <span>&nbsp;:&nbsp;</span>
+                  <span class="defender">{{ this.away_team.current_goals }} {{this.away_team.abbr}}</span>
+                </h2>
+              </div>
             </div>
             <div class="square tile">
               <h1>Event time</h1>
@@ -43,10 +48,10 @@
         </div>
         <div class="predicted-score tile scrollbar" style="overflow-y: auto">
           <h1>Prediction</h1>
-          <h3>Attacker:</h3>
+          <h3>{{this.home_team.name}}:</h3>
           <info-table :team="this.home_team"></info-table>
           <hr>
-          <h3>Defender:</h3>
+          <h3>{{this.away_team.name}}:</h3>
           <info-table :team="this.away_team"></info-table>
         </div>
       </div>
@@ -88,16 +93,16 @@ export default {
       home_team: {
         predicted_goals: null,
         actual_goals: null,
-        current_goals: null,
-        name: null,
-        abbr: null,
+        current_goals: 0,
+        name: "Home team",
+        abbr: "HOME",
       },
       away_team: {
         predicted_goals: null,
         actual_goals: null,
-        current_goals: null,
-        name: null,
-        abbr: null,
+        current_goals: 0,
+        name: "Away team",
+        abbr: "AWAY",
       },
       datasetIdKey: {
         type: String,
