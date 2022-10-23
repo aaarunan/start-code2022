@@ -125,7 +125,11 @@ export default {
   },
   methods: {
     fetchNewValues() {
-      Api().get("/next-minute").then(({data}) => this.updateData(data)).catch();
+      Api().get("/next-minute").then(({data}) => this.updateData(data)).catch((e) => {
+        if (e instanceof TypeError) {
+          console.log("done")
+        } else throw e;
+      });
     },
     getImageURL(event) {
       return require(`@/static/icons/${event.event}.png`)
@@ -136,6 +140,9 @@ export default {
       this.chartData.datasets[0].data.push(this.data.winrate_ratio)
     },
     updateData(data) {
+      if (data === null) {
+        throw TypeError("No more data")
+      }
       this.home_team = data.home_team;
       this.away_team = data.away_team;
       console.log(data.home_team.predicted_goals)

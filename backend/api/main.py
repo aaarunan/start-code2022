@@ -30,7 +30,9 @@ app.add_middleware(
 
 @app.get("/next-minute")
 async def get_next_match():
-    events: list[Event] = next(match_gen)
+    events: list[Event] = next(match_gen, None)
+    if events is None:
+        return None
     home_data = pandas.DataFrame(data=match.last_event_data(0))
     away_data = pandas.DataFrame(data=match.last_event_data(1))
     predictions = (get_new_prediction(home_data, rf), get_new_prediction(away_data, rf))
