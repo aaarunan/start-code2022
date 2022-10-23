@@ -119,33 +119,34 @@ export default {
   },
   methods: {
     fetchNewValues() {
-      // eslint-disable-next-line
-      Api().get("/next-minute").then(({data}) => {
-        this.home_team = data.home_team;
-        this.away_team = data.away_team;
-        console.log(data.home_team.predicted_goals)
-        this.data.winrate_ratio = data.home_team.predicted_goals / (data.home_team.predicted_goals + data.away_team.predicted_goals)
-        this.data.winrate_actual = data.home_team.actual_goals / (data.home_team.actual_goals + data.away_team.actual_goals)
-        if (isNaN(this.data.winrate_ratio)) {
-          this.data.winrate_ratio = 0.5;
-        }
-        if (isNaN(this.data.winrate_actual)) {
-          this.data.winrate_actual = 0.5
-        }
-        this.data.events = data.events
-        this.data.outputMessages.push(data)
-        this.chartData.labels.push(data.minutes)
-        this.data.eventMinute = data.minutes
-        this.chartData.datasets[1].data.push(this.data.winrate_actual)
-        this.chartData.datasets[0].data.push(this.data.winrate_ratio)
-      }).catch(() => {
-        console.error("moren din er feil")
-        Api().get('/reset')
-      });
+      Api().get("/next-minute").then(({data}) =>  this.updateData(data)).catch(() => Api().get('/reset'));
     },
     getImageURL(event) {
       return require(`@/static/icons/${event.event}.png`)
     },
+    updateChartData(data) {
+      this.chartData.labels.push(data.minutes)
+      this.chartData.datasets[1].data.push(this.data.winrate_actual)
+      this.chartData.datasets[0].data.push(this.data.winrate_ratio)
+    },
+    updateData(data) {
+      this.home_team = data.home_team;
+      this.away_team = data.away_team;
+      console.log(data.home_team.predicted_goals)
+      this.data.winrate_actual = data.home_team.actual_goals / (data.home_team.actual_goals + data.away_team.actual_goals)
+      this.data.winrate_ratio = data.home_team.predicted_goals / (data.home_team.predicted_goals + data.away_team.predicted_goals)
+      if (isNaN(this.data.winrate_ratio)) {
+        this.data.winrate_ratio = 0.5;
+      }
+      if (isNaN(this.data.winrate_actual)) {
+        this.data.winrate_actual = 0.5
+      }
+      this.data.events = data.events
+      this.data.outputMessages.push(data)
+      this.data.eventMinute = data.minutes
+      this.updateChartData()
+    }
+
   }
 }
 </script>
