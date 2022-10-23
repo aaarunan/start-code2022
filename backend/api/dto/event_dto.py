@@ -6,3 +6,4 @@ class event_dto(BaseModel):
     event_id: int
     minutes: int
     seconds: int
+    perpetrator: str

@@ -38,6 +38,7 @@ class match_dto(BaseModel):
                     event_id=event.type,
                     minutes=event.minutes,
                     seconds=event.seconds,
+                    perpetrator=event.side
                 )
             )
 
