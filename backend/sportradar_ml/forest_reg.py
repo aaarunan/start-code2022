@@ -61,7 +61,7 @@ def split_data(features, labels):
     Split data into training (approx. 70-80%) and testing (20-30%) sets. This is called hold-out validation.
     The train_test_split method automatically randomly splits the data set based on the random_state variable.
     """
-    return train_test_split(features, labels, test_size=0.95, random_state=42)
+    return train_test_split(features, labels, test_size=0.5, random_state=42)
 
 
 # Could switch verbose back to one, check when the algorithm is actually being used.
@@ -70,7 +70,7 @@ def create_forest():
     This method creates a random forest regressor, with 1000 decision trees, random validation and display information
     surrounding the building of trees.
     """
-    return RandomForestRegressor(n_estimators=10, random_state=42, verbose=2)
+    return RandomForestRegressor(n_estimators=1500, random_state=42, verbose=2)
 
 
 def train_rf(rf):
