@@ -89,11 +89,15 @@ export default {
         predicted_goals: null,
         actual_goals: null,
         current_goals: null,
+        name: null,
+        abbr: null,
       },
       away_team: {
         predicted_goals: null,
         actual_goals: null,
         current_goals: null,
+        name: null,
+        abbr: null,
       },
       datasetIdKey: {
         type: String,
@@ -147,7 +151,7 @@ export default {
       this.data.events = data.events
       this.data.outputMessages.push(data)
       this.data.eventMinute = data.minutes
-      this.updateChartData()
+      this.updateChartData(data)
     }
 
   }

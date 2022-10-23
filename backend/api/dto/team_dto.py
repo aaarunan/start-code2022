@@ -7,4 +7,6 @@ class team_dto(BaseModel):
     current_goals: int
     predicted_goals: float
     actual_goals: int
+    name: str
+    abbr: str
 
