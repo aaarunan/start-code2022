@@ -12,13 +12,13 @@
           <div class="row">
             <div class="square tile">
               <h1>Goals</h1>
-              <h2 class="centered-text attacker">{{ this.home_team.current_goals }}</h2>
+                <h2 class="centered-text attacker">{{ this.home_team.current_goals }}</h2>
               <h2 class="centered-text defender">{{ this.away_team.current_goals }}</h2>
             </div>
             <div class="square tile">
               <h1>Event time</h1>
               <div class="centered">
-                <h1 class="centered-text large"> {{this.data.eventMinute}}:00</h1>
+                <h1 class="centered-text large"> {{ this.data.eventMinute }}:00</h1>
               </div>
             </div>
           </div>
@@ -29,7 +29,8 @@
             <div class="square tile">
               <h1>Events</h1>
               <div class="centered">
-                <v-lazy-image v-for="event in this.data.events" :src=this.getImageURL(event) :alt="event.eventType" :key="event" style="width: 40px" />
+                <v-lazy-image v-for="event in this.data.events" :src=this.getImageURL(event) :alt="event.eventType"
+                              :key="event" style="width: 40px"/>
               </div>
             </div>
           </div>
@@ -38,9 +39,9 @@
       <div class="row">
         <div class="graph tile">
           <h1>Graph</h1>
-          <Chart :chart-data="this.chartData" :dataset-id-key="this.datasetIdKey" />
+          <Chart :chart-data="this.chartData" :dataset-id-key="this.datasetIdKey"/>
         </div>
-        <div class="predicted-score tile">
+        <div class="predicted-score tile scrollbar" style="overflow-y: auto">
           <h1>Prediction</h1>
           <h3>Attacker:</h3>
           <info-table :team="this.home_team"></info-table>
@@ -71,6 +72,7 @@ export default {
   },
   data() {
     return {
+      finish: false,
       data: {
         defenderGoals: null,
         predictedChartValues: [],
@@ -115,11 +117,12 @@ export default {
     }
   },
   mounted() {
+    Api().get("/reset")
     setInterval(() => this.fetchNewValues(), 500)
   },
   methods: {
     fetchNewValues() {
-      Api().get("/next-minute").then(({data}) =>  this.updateData(data)).catch(() => Api().get('/reset'));
+      Api().get("/next-minute").then(({data}) => this.updateData(data)).catch();
     },
     getImageURL(event) {
       return require(`@/static/icons/${event.event}.png`)
@@ -158,5 +161,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+  margin: 0;
 }
 </style>

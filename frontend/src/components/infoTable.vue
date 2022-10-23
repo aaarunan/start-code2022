@@ -23,7 +23,7 @@ export default {
     margin: auto;
   }
   th, td {
-    padding: 10px 20px;
+    padding: 7px 20px;
     width: max-content;
   }
 </style>
