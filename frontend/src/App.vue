@@ -59,7 +59,7 @@
     <div class="probability-bar tile">
       <div class="inner-bar" :style="{height: (1 - this.data.winrate_ratio) * 100 + '%'}"></div>
     </div>
-    <div class="actual-bar" :style="{height: (1 - this.data.winrate_actual) * 100 +'%'}"/>
+    <div class="actual-bar" :style="{height: `calc((${(1 - this.data.winrate_actual) * 100}% - ${(1 - this.data.winrate_actual) * 20}px)`}"/>
   </div>
 </template>
 <script>
