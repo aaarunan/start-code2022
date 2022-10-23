@@ -23,14 +23,14 @@
             </div>
           </div>
           <div class="row">
-            <div class="square tile">
-              <h1></h1>
+            <div class="square tile" id="reset-button" @click="reload">
+              <h1>RESET</h1>
             </div>
             <div class="square tile">
               <h1>Events</h1>
               <div class="centered">
                 <v-lazy-image v-for="event in this.data.events" :src=this.getImageURL(event) :alt="event.eventType"
-                              :key="event" style="width: 40px"/>
+                              :key="event" style="width: 80px"/>
               </div>
             </div>
           </div>
@@ -203,12 +203,29 @@ export default {
     },
     getScore(data) {
       return data.home_team.current_goals + " : " + data.away_team.current_goals;
+    },
+    reload() {
+      window.location.reload();
     }
   }
 }
 </script>
 <style>
 @import '@/static/css/main.css';
+
+#reset-button {
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  display: flex;
+  font-size: 32px;
+}
+
+#reset-button:hover {
+  background-color: tomato;
+  cursor: pointer;
+  border: 2px #2c3e50 solid;
+}
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
