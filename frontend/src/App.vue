@@ -121,6 +121,7 @@ export default {
     }
   },
   mounted() {
+    Api().get("/reset")
     setInterval(() => this.fetchNewValues(), 500)
   },
   methods: {
@@ -155,9 +156,9 @@ export default {
         this.data.winrate_actual = 0.5
       }
       this.data.events = data.events
-      for (const event of this.getActionWord(data)) {
-        if (event !== ""){
-          this.data.outputMessages.unshift(data.minutes + ':00' + event)
+      for (const message of this.getActionWord(data)) {
+        if (message !== ""){
+          this.data.outputMessages.unshift(message)
         }
       }
       this.data.eventMinute = data.minutes
@@ -165,36 +166,40 @@ export default {
     },
     getActionWord: function*(data) {
       for(let i = 0; i < data.events.length; i++){
-        switch (data.events[0].event) {
+        let event = data.events[i]
+        switch (event.event) {
           case "FREE KICK":
-            yield  " got a free kick!";
+            yield this.getEventLine(event, "got a free kick")
             break
 
           case "FREE-THROW":
-            yield " got a free throw.";
+            yield this.getEventLine(event, "got a free throw.")
             break
 
           case "PENALTY AWARDED":
-            yield " was awarded a penalty!";
+            yield this.getEventLine(event, "was awarded a penalty!")
             break
 
           case "SHOT OF TARGET":
-            yield " shot off target...";
+            yield this.getEventLine(event, "shot off target...")
             break
 
           case "GOAL":
-            yield " scored!!! The score is now " + this.getScore(data);
+            yield this.getEventLine(event, "scored!!! The score is now " + this.getScore(data))
             break
 
           case "RED CARD":
-            yield " got a red card and had to sub!";
+            yield this.getEventLine(event, "got a red card and had to sub!")
             break
 
           default:
-            yield"";
+            yield "";
             break
         }
       }
+    },
+    getEventLine(event, text) {
+      return event.minutes + ":" + event.seconds + "    " + ((event.perpetrator === "home") ? this.home_team.name : this.away_team.name) + " " + text;
     },
     getScore(data) {
       return data.home_team.current_goals + " : " + data.away_team.current_goals;
