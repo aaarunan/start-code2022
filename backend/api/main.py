@@ -9,7 +9,7 @@ from sportradar_ml.forest_reg import load_model_from_joblib, get_new_prediction
 from sportradar_ml.forest_reg import get_new_prediction
 
 app = FastAPI()
-match = parse_file('matches/300matches/28160536.xml')
+match = parse_file('matches/27647274.xml')
 rf = load_model_from_joblib('rf')
 
 match_gen = match.event_per_minute()

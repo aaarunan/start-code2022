@@ -169,10 +169,11 @@ class Match:
     def dataframe(self) -> pandas.DataFrame:
         data: defaultdict[str, list[float]] = defaultdict(list)
         for event in self.events_generator():
+            side = 0 if event.side == "home" else 1
             if isinstance(event, GoalEvent) or isinstance(event, PossessionEvent):
                 continue
-            for key, value in self.last_event_data():
-                data[key].append(value)
+            for key, value in self.last_event_data(side).items():
+                data[key].append(value[0])
         return pandas.DataFrame(data=data)
 
     def __str__(self):
