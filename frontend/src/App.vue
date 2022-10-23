@@ -161,7 +161,7 @@ export default {
           this.data.outputMessages.unshift(message)
         }
       }
-      this.data.eventMinute = data.minutes
+      this.data.eventMinute = String(data.minutes).padStart(2, "0")
       this.updateChartData(data)
     },
     getActionWord: function*(data) {
@@ -199,7 +199,7 @@ export default {
       }
     },
     getEventLine(event, text) {
-      return event.minutes + ":" + event.seconds + "    " + ((event.perpetrator === "home") ? this.home_team.name : this.away_team.name) + " " + text;
+      return String(event.minutes).padStart(2, '0') + ":" + String(event.seconds).padStart(2, '0') + "    " + ((event.perpetrator === "home") ? this.home_team.name : this.away_team.name) + " " + text;
     },
     getScore(data) {
       return data.home_team.current_goals + " : " + data.away_team.current_goals;
