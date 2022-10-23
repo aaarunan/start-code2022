@@ -27,6 +27,7 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+
 @app.get("/next-minute")
 async def get_next_match():
     events: list[Event] = next(match_gen)

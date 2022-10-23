@@ -3,7 +3,7 @@
     <div class="info-container">
       <div class="row">
         <div class="output tile ">
-          <h1>Output</h1>
+          <h1>Live Feed</h1>
           <div class="scrollable scrollbar">
             <p v-for="message in this.data.outputMessages" :key="message"> {{ message }} </p>
           </div>
@@ -121,7 +121,6 @@ export default {
     }
   },
   mounted() {
-    Api().get("/reset")
     setInterval(() => this.fetchNewValues(), 500)
   },
   methods: {
@@ -149,11 +148,50 @@ export default {
         this.data.winrate_actual = 0.5
       }
       this.data.events = data.events
-      this.data.outputMessages.push(data)
+      for (const event of this.getActionWord(data)) {
+        if (event !== ""){
+          this.data.outputMessages.unshift(data.minutes + ':00' + event)
+        }
+      }
       this.data.eventMinute = data.minutes
       this.updateChartData(data)
-    }
+    },
+    getActionWord: function*(data) {
+      for(let i = 0; i < data.events.length; i++){
+        switch (data.events[0].event) {
+          case "FREE KICK":
+            yield  " got a free kick!";
+            break
 
+          case "FREE-THROW":
+            yield " got a free throw.";
+            break
+
+          case "PENALTY AWARDED":
+            yield " was awarded a penalty!";
+            break
+
+          case "SHOT OF TARGET":
+            yield " shot off target...";
+            break
+
+          case "GOAL":
+            yield " scored!!! The score is now " + this.getScore(data);
+            break
+
+          case "RED CARD":
+            yield " got a red card and had to sub!";
+            break
+
+          default:
+            yield"";
+            break
+        }
+      }
+    },
+    getScore(data) {
+      return data.home_team.current_goals + " : " + data.away_team.current_goals;
+    }
   }
 }
 </script>

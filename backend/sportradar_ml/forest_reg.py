@@ -179,11 +179,11 @@ def graph_feature_importance():
 
 def get_new_prediction(new_event_df, rf):
     """
-    By taking a new event dataframe as a parameter, this method returns the algorithm's best prediction for the final score
-    of one team.
+    By taking a new event dataframe as a parameter, this method returns the algorithm's best prediction for the final
+    score of one team.
     """
-    # Input to handle: time in game, the actual event
     new_event_df = drop_label(new_event_df)
+    # Input to handle: time in game, the actual event
     return rf.predict(new_event_df)
 
 
@@ -216,5 +216,3 @@ if __name__ == '__main__':
     print(predictions)
     print("Actual Values")
     print(test_labels)
-
-# TODO: Fix the print tree function, start training the big boy model, read about more statistical models, work on pres.
