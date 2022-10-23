@@ -196,17 +196,22 @@ def get_new_prediction(new_event_df, rf):
 
 
 if __name__ == '__main__':
+    print("Loading data...")
     df = get_df_from_csv("1000matches")
-
     train_features, test_features, train_labels, test_labels = split_data(get_arr_features(df), get_labels(df))
+
+    print("Creating model...")
     rf = create_forest()
     train_rf(rf)
-
     save_trained_model(rf, "rf")
 
-    # rf = load_model_from_joblib("Trained_random_forest_3000")
+    # print("Loading model...")
+    # rf = load_model_from_joblib("../rf")
+
+    print("Calculating predictions...")
     predictions = rf.predict(test_features)
 
+    print("Calculating importance...")
     importances = get_important_feat(rf)
 
     # print_tree()
