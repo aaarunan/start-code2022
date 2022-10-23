@@ -78,6 +78,7 @@ export default {
   data() {
     return {
       finish: false,
+      timeLoop: null,
       data: {
         defenderGoals: null,
         predictedChartValues: [],
@@ -126,13 +127,13 @@ export default {
     }
   },
   mounted() {
-    setInterval(() => this.fetchNewValues(), 500)
+    this.timeLoop = setInterval(() => this.fetchNewValues(), 500)
   },
   methods: {
     fetchNewValues() {
       Api().get("/next-minute").then(({data}) => this.updateData(data)).catch((e) => {
         if (e instanceof TypeError) {
-          console.log("done")
+          clearInterval(this.timeLoop);
         } else throw e;
       });
     },
