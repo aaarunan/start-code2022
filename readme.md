@@ -16,7 +16,7 @@ In order to run the application, clone the project from the main branch. The clo
 
 The frontend package has a readme for how to install the components of the Vue framework and how to launch the GUI.
 
-The backend package contains the methods for launching a local server, with the use of the FastAPI. 
+The backend contains a readme for a guide on how to install and run it.
 
 When actually running the application, both the backend's local server and the frontend's GUI have to be launched. Therefore, the two packages need to be open in separate windows. 
 
